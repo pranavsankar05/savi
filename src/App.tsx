@@ -7,6 +7,7 @@ type Period = "weekly" | "monthly";
 interface Bubble {
   id: string;
   label: string;
+  category: string;
   amount: number;
   size: number; // px diameter
   // rough organic cluster positions (% of container)
@@ -47,14 +48,14 @@ const WEEKLY: {
   totalSpent: 5154,
   totalBudget: 8000,
   bubbles: [
-    { id: "b1", label: "Amazon",   amount: 1100, size: 118, cx: 50, cy: 48, z: 10 },
-    { id: "b2", label: "Swiggy",   amount: 220,  size: 68,  cx: 28, cy: 62, z: 7  },
-    { id: "b3", label: "Zomato",   amount: 185,  size: 60,  cx: 42, cy: 76, z: 6  },
-    { id: "b4", label: "Netflix",  amount: 649,  size: 96,  cx: 70, cy: 40, z: 9  },
-    { id: "b5", label: "Flipkart", amount: 760,  size: 104, cx: 36, cy: 28, z: 8  },
-    { id: "b6", label: "BESCOM",   amount: 940,  size: 108, cx: 68, cy: 64, z: 8  },
-    { id: "b7", label: "Spotify",  amount: 119,  size: 52,  cx: 83, cy: 25, z: 5  },
-    { id: "b8", label: "Ola",      amount: 181,  size: 58,  cx: 20, cy: 38, z: 6  },
+    { id: "b1", label: "Amazon", category: "shopping",   amount: 1100, size: 118, cx: 50, cy: 48, z: 10 },
+    { id: "b2", label: "Swiggy", category: "food",   amount: 220,  size: 68,  cx: 28, cy: 62, z: 7  },
+    { id: "b3", label: "Zomato", category: "food",   amount: 185,  size: 60,  cx: 42, cy: 76, z: 6  },
+    { id: "b4", label: "Netflix", category: "entertainment",  amount: 649,  size: 96,  cx: 70, cy: 40, z: 9  },
+    { id: "b5", label: "Flipkart", category: "shopping", amount: 760,  size: 104, cx: 36, cy: 28, z: 8  },
+    { id: "b6", label: "BESCOM", category: "utilities",   amount: 940,  size: 108, cx: 68, cy: 64, z: 8  },
+    { id: "b7", label: "Spotify", category: "entertainment",  amount: 119,  size: 52,  cx: 83, cy: 25, z: 5  },
+    { id: "b8", label: "Ola", category: "transport",      amount: 181,  size: 58,  cx: 20, cy: 38, z: 6  },
   ],
   categories: [
     { id: "shopping",      label: "Shopping",      spent: 1860, budget: 2000 },
@@ -84,14 +85,14 @@ const MONTHLY: typeof WEEKLY = {
   totalSpent: 18920,
   totalBudget: 28000,
   bubbles: [
-    { id: "b1", label: "Amazon",   amount: 4300, size: 128, cx: 50, cy: 48, z: 10 },
-    { id: "b2", label: "Swiggy",   amount: 870,  size: 84,  cx: 28, cy: 62, z: 7  },
-    { id: "b3", label: "Zomato",   amount: 640,  size: 76,  cx: 42, cy: 76, z: 6  },
-    { id: "b4", label: "Netflix",  amount: 649,  size: 72,  cx: 70, cy: 40, z: 9  },
-    { id: "b5", label: "Flipkart", amount: 3200, size: 116, cx: 36, cy: 28, z: 8  },
-    { id: "b6", label: "BESCOM",   amount: 2500, size: 112, cx: 68, cy: 64, z: 8  },
-    { id: "b7", label: "Spotify",  amount: 119,  size: 48,  cx: 83, cy: 25, z: 5  },
-    { id: "b8", label: "Ola",      amount: 580,  size: 74,  cx: 20, cy: 38, z: 6  },
+    { id: "b1", label: "Amazon", category: "shopping",   amount: 4300, size: 128, cx: 50, cy: 48, z: 10 },
+    { id: "b2", label: "Swiggy", category: "food",   amount: 870,  size: 84,  cx: 28, cy: 62, z: 7  },
+    { id: "b3", label: "Zomato", category: "food",   amount: 640,  size: 76,  cx: 42, cy: 76, z: 6  },
+    { id: "b4", label: "Netflix", category: "entertainment",  amount: 649,  size: 72,  cx: 70, cy: 40, z: 9  },
+    { id: "b5", label: "Flipkart", category: "shopping", amount: 3200, size: 116, cx: 36, cy: 28, z: 8  },
+    { id: "b6", label: "BESCOM", category: "utilities",   amount: 2500, size: 112, cx: 68, cy: 64, z: 8  },
+    { id: "b7", label: "Spotify", category: "entertainment",  amount: 119,  size: 48,  cx: 83, cy: 25, z: 5  },
+    { id: "b8", label: "Ola", category: "transport",      amount: 580,  size: 74,  cx: 20, cy: 38, z: 6  },
   ],
   categories: [
     { id: "shopping",      label: "Shopping",      spent: 7500,  budget: 10000 },
@@ -118,28 +119,71 @@ const MONTHLY: typeof WEEKLY = {
 
 // ─── Glass helpers ────────────────────────────────────────────────────────────
 
-// 3D glass sphere — single light source top-left, transparent body, minimal
-const soapBubble: React.CSSProperties = {
-  background: [
-    // Sharp specular — top-left light source
-    "radial-gradient(circle at 33% 27%, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.55) 7%, transparent 22%)",
-    // Diffuse fill — barely there
-    "radial-gradient(circle at 50% 44%, rgba(255,255,255,0.07) 0%, transparent 70%)",
-    // Inner shadow — bottom of sphere, gives depth
-    "radial-gradient(ellipse at 50% 92%, rgba(0,0,20,0.22) 0%, transparent 55%)",
-  ].join(", "),
-  border: "1px solid rgba(255,255,255,0.28)",
-  boxShadow: [
-    // Drop shadow — grounds the sphere
-    "0 8px 20px rgba(0,0,0,0.38)",
-    // Top rim catch-light
-    "inset 0 1px 0 rgba(255,255,255,0.5)",
-    // Bottom inner shadow
-    "inset 0 -2px 6px rgba(0,0,10,0.2)",
-  ].join(", "),
-  backdropFilter: "blur(3px) saturate(1.4)",
-  WebkitBackdropFilter: "blur(3px) saturate(1.4)",
+// One muted shade per category — used for the category progress bars and
+// bubble aria-labels (bubbles themselves are no longer tinted by category).
+// Kept low-saturation on purpose so the palette stays minimal.
+const CATEGORY_COLORS: Record<string, { rgb: string; label: string }> = {
+  shopping: { rgb: "121,141,255", label: "Shopping" },
+  food: { rgb: "255,146,120", label: "Food & Drinks" },
+  entertainment: { rgb: "186,150,255", label: "Entertainment" },
+  utilities: { rgb: "110,205,190", label: "Utilities" },
+  transport: { rgb: "230,190,110", label: "Transport" },
+  general: { rgb: "255,255,255", label: "General" },
 };
+
+// 3D glass sphere — single light source, organic silhouette, transparent
+// core / tinted rim so the blurred backdrop shows through the middle
+function seedFrom(id: string): number {
+  let h = 0;
+  for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) >>> 0;
+  return h % 20;
+}
+
+function soapBubble(seed: number): React.CSSProperties {
+  // No per-category color — every bubble uses the same neutral glass tone.
+  // A plain white-to-white gradient has almost no tonal range to read as
+  // curvature, so a faint cool-white-to-neutral-gray sweep gives every
+  // bubble the same subtle 3D shading without tinting any of them.
+  const rgb = "225,235,255";
+  const rgbDark = "90,94,104";
+
+  // Deterministic per-bubble jitter so no two bubbles share an identical
+  // highlight position or silhouette
+  const hx = 28 + (seed % 10); // 28–37%
+  const hy = 22 + (seed % 8) - (seed % 3);
+  const r1 = 49 + (seed % 4);
+  const r2 = 51 - (seed % 3);
+  const r3 = 48 + (seed % 5);
+  const r4 = 52 - (seed % 4);
+
+  return {
+    // Slightly irregular blob instead of a perfect circle
+    borderRadius: `${r1}% ${100 - r1}% ${r2}% ${100 - r2}% / ${r3}% ${r4}% ${100 - r4}% ${100 - r3}%`,
+    background: [
+      // Small, bright, tight glossy hotspot — the "wet" glint, jittered per bubble
+      `radial-gradient(circle at ${hx}% ${hy}%, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.3) 3%, transparent 11%)`,
+      // Transparent CORE, tinted RIM — a real soap film is most see-through in
+      // the middle and most colored at the edge (longer optical path through
+      // the film there). This is what makes it read as "glass" instead of
+      // "solid disc": you can see the blurred backdrop through the center.
+      `radial-gradient(circle at 50% 50%, transparent 0%, transparent 30%, rgba(${rgb},0.16) 52%, rgba(${rgb},0.36) 74%, rgba(${rgbDark},0.42) 100%)`,
+    ].join(", "),
+    border: `1px solid rgba(${rgb},0.32)`,
+    boxShadow: [
+      // Drop shadow — grounds the sphere
+      "0 10px 22px rgba(0,0,0,0.4)",
+      // Fresnel rim — bright on the lit side, sells "glass" over "flat circle"
+      "0 -1px 2px rgba(255,255,255,0.22)",
+      // Dark rim on the shadow side, opposite the light — carries the
+      // directional shading (fill itself stays transparent)
+      `inset -6px -8px 12px rgba(${rgbDark},0.38)`,
+      // Soft inner glow near the lit edge
+      "inset 4px 6px 8px rgba(255,255,255,0.10)",
+    ].join(", "),
+    backdropFilter: "blur(4px) saturate(1.6)",
+    WebkitBackdropFilter: "blur(4px) saturate(1.6)",
+  };
+}
 
 // Minimal frosted glass for cards and tx icons
 const glassBubble: React.CSSProperties = {
@@ -254,9 +298,9 @@ function BubbleCloud({ bubbles }: { bubbles: Bubble[] }) {
               transition:
                 "left 0.44s cubic-bezier(0.22,1,0.36,1), top 0.44s cubic-bezier(0.22,1,0.36,1), transform 0.36s cubic-bezier(0.34,1.4,0.64,1)",
               willChange: "left, top, transform",
-              ...soapBubble,
+              ...soapBubble(seedFrom(b.id)),
             }}
-            aria-label={`${b.label} ₹${b.amount}`}
+            aria-label={`${b.label} ₹${b.amount}, ${(CATEGORY_COLORS[b.category] || CATEGORY_COLORS.general).label}`}
           >
             <span
               className="font-semibold text-center leading-none relative z-10"
@@ -313,11 +357,14 @@ function CategoryBars({ categories }: { categories: CategoryRow[] }) {
         const pct = Math.min(Math.round((cat.spent / cat.budget) * 100), 100);
         const isDanger = pct >= 90;
         const isWarn = pct >= 70;
+        // Healthy bars use the category's own established hue (same as its
+        // bubble used to be) instead of a separate accent color
+        const catRgb = (CATEGORY_COLORS[cat.id] || CATEGORY_COLORS.general).rgb;
         const trackColor = isDanger
           ? "rgba(239,68,68,0.85)"
           : isWarn
           ? "rgba(234,179,8,0.8)"
-          : "rgba(255,255,255,0.6)";
+          : `rgba(${catRgb},0.85)`;
         return (
           <div key={cat.id}>
             <div className="flex items-center justify-between mb-1.5">
@@ -392,23 +439,23 @@ function BarChart({ bars, period }: { bars: BarGroup[]; period: Period }) {
           const h2 = Math.round((bar.secondary / maxVal) * chartHeight);
           return (
             <div key={bar.label} className="flex-1 flex items-end gap-0.5">
-              {/* Primary bar */}
+              {/* Primary bar — warm gold, complements the ambient glow instead of plain white */}
               <div
                 className="flex-1 rounded-t-md transition-all duration-500"
                 style={{
                   height: h1,
-                  background: "rgba(255,255,255,0.55)",
-                  boxShadow: "inset 0 1px 0 rgba(255,255,255,0.4)",
+                  background: "linear-gradient(180deg, rgba(224,168,92,0.8) 0%, rgba(196,140,70,0.55) 100%)",
+                  boxShadow: "inset 0 1px 0 rgba(255,255,255,0.3)",
                   minWidth: 6,
                 }}
               />
-              {/* Secondary bar */}
+              {/* Secondary bar — warm muted neutral, quiet contrast against the gold */}
               <div
                 className="flex-1 rounded-t-md transition-all duration-500"
                 style={{
                   height: h2,
-                  background: "rgba(255,255,255,0.18)",
-                  boxShadow: "inset 0 1px 0 rgba(255,255,255,0.2)",
+                  background: "rgba(214,180,150,0.28)",
+                  boxShadow: "inset 0 1px 0 rgba(255,255,255,0.15)",
                   minWidth: 6,
                 }}
               />
@@ -438,7 +485,7 @@ function BarChart({ bars, period }: { bars: BarGroup[]; period: Period }) {
         <div className="flex items-center gap-1.5">
           <div
             className="w-2.5 h-2.5 rounded-sm"
-            style={{ background: "rgba(255,255,255,0.55)" }}
+            style={{ background: "rgba(224,168,92,0.85)" }}
           />
           <span
             className="text-xs"
@@ -523,7 +570,7 @@ function BudgetSummary({ spent, budget }: { spent: number; budget: number }) {
   const remaining = budget - spent;
   const isWarn = pct >= 70;
   const isDanger = pct >= 90;
-  const fillColor = isDanger ? "rgba(239,68,68,0.9)" : isWarn ? "rgba(234,179,8,0.85)" : "rgba(255,255,255,0.65)";
+  const fillColor = isDanger ? "rgba(239,68,68,0.9)" : isWarn ? "rgba(234,179,8,0.85)" : "rgba(224,168,92,0.9)";
 
   return (
     <div
@@ -669,7 +716,8 @@ export default function App() {
             zIndex: 0,
           }}
         />
-        {/* Fixed gradient — sits on top of dots */}
+        {/* Minimal, dark ambient glow — muted pinkish-purple, concentrated
+            near the bubble cluster rather than a bright corner-to-corner wash */}
         <div
           className="pointer-events-none"
           style={{
@@ -681,7 +729,7 @@ export default function App() {
             maxWidth: 390,
             height: "100vh",
             background:
-              "radial-gradient(ellipse 130% 68% at 50% 0%, rgba(48,82,200,0.68) 0%, rgba(28,50,160,0.34) 32%, rgba(10,20,80,0.16) 60%, transparent 82%)",
+              "radial-gradient(circle 460px at 50% 36%, rgba(150,90,160,0.4) 0%, rgba(110,55,125,0.26) 32%, rgba(65,30,78,0.15) 58%, transparent 80%), radial-gradient(ellipse 125% 78% at 50% 40%, rgba(60,26,68,0.18) 0%, transparent 75%)",
             zIndex: 1,
           }}
         />
@@ -699,8 +747,8 @@ export default function App() {
             backgroundImage:
               "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E\")",
             backgroundRepeat: "repeat",
-            backgroundSize: "160px 160px",
-            opacity: 0.11,
+            backgroundSize: "140px 140px",
+            opacity: 0.34,
             mixBlendMode: "overlay",
             zIndex: 2,
           }}
@@ -765,28 +813,28 @@ export default function App() {
               className="text-base font-semibold tracking-tight"
               style={{ color: "rgba(255,255,255,0.88)", letterSpacing: "-0.03em" }}
             >
-              fintrack
+              Savi
             </span>
           </div>
 
-          {/* Hamburger */}
+          {/* Hamburger — 3 even lines, classic menu icon */}
           <button
             onClick={() => setDrawerOpen(true)}
-            className="flex flex-col items-end justify-center gap-[5px] w-9 h-9 rounded-xl"
-            style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.08)" }}
+            className="flex flex-col items-center justify-center w-9 h-9 rounded-xl"
+            style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.08)", gap: 3 }}
             aria-label="Open menu"
           >
             <span
               className="block rounded-full"
-              style={{ width: 15, height: 1.5, background: "rgba(255,255,255,0.7)", marginRight: 6 }}
+              style={{ width: 16, height: 1.5, background: "rgba(255,255,255,0.7)" }}
             />
             <span
               className="block rounded-full"
-              style={{ width: 10, height: 1.5, background: "rgba(255,255,255,0.5)", marginRight: 6 }}
+              style={{ width: 16, height: 1.5, background: "rgba(255,255,255,0.7)" }}
             />
             <span
               className="block rounded-full"
-              style={{ width: 13, height: 1.5, background: "rgba(255,255,255,0.7)", marginRight: 6 }}
+              style={{ width: 16, height: 1.5, background: "rgba(255,255,255,0.7)" }}
             />
           </button>
         </header>
